@@ -12,7 +12,7 @@ require('dotenv').config();
 let User, ClaimHistory;
 try {
   User = require('./models/user');
-  ClaimHistory = require('./models/claimHistory'); // ➕ Load claim history model
+  ClaimHistory = require('./models/claimHistory');
   console.log("🛠️  Models loaded");
 } catch (e) {
   console.error("❌ Model load error:", e.message);
@@ -25,7 +25,6 @@ app.use(express.json());
 
 console.log("🛠️  MONGO_URI:", process.env.MONGO_URI);
 
-// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB connection error:", err));
@@ -36,7 +35,7 @@ app.get('/', (req, res) => {
   res.send("🎉 Server is running!");
 });
 
-// 👤 Test route: create a sample user
+// 👤 Create a test user
 app.get('/create-test-user', async (req, res) => {
   console.log("➡️  GET /create-test-user");
   try {
@@ -58,6 +57,10 @@ app.post('/claim-points', async (req, res) => {
     return res.status(400).json({ error: "userId and numeric points are required" });
   }
 
+  if (points < 1 || points > 10) {
+    return res.status(400).json({ error: "Points must be between 1 and 10" });
+  }
+
   try {
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -76,14 +79,13 @@ app.post('/claim-points', async (req, res) => {
   }
 });
 
-// 📊 GET /leaderboard - Return users sorted by score
+// 📊 GET /leaderboard
 app.get('/leaderboard', async (req, res) => {
   try {
-    const users = await User.find().sort({ score: -1 }); // Highest to lowest
+    const users = await User.find().sort({ score: -1 });
     users.forEach((user, index) => {
       user.rank = index + 1;
     });
-
     res.json({ leaderboard: users });
   } catch (err) {
     console.error("❌ Error in /leaderboard:", err);
@@ -91,12 +93,14 @@ app.get('/leaderboard', async (req, res) => {
   }
 });
 
-// 📜 GET /claim-history/:userId - Return user's claim history
+// 📜 GET /claim-history/:userId
 app.get('/claim-history/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const history = await ClaimHistory.find({ userId }).sort({ claimedAt: -1 });
+    const history = await ClaimHistory.find({ userId })
+      .populate('userId', 'username')
+      .sort({ claimedAt: -1 });
 
     if (!history.length) {
       return res.status(404).json({ message: "No claim history found for this user." });
@@ -104,12 +108,12 @@ app.get('/claim-history/:userId', async (req, res) => {
 
     res.json({ history });
   } catch (err) {
-    console.error("❌ Error in /claim-history:", err);
+    console.error("❌ Error in /claim-history/:userId:", err);
     res.status(500).json({ error: "❌ Failed to retrieve claim history" });
   }
 });
 
-// 👁️ GET /user/:id - Return user info by ID
+// 👁️ GET /user/:id
 app.get('/user/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -121,6 +125,42 @@ app.get('/user/:id', async (req, res) => {
   } catch (err) {
     console.error("❌ Error in /user/:id:", err);
     res.status(500).json({ error: "❌ Failed to fetch user" });
+  }
+});
+
+// 📋 GET /users - All users for dropdown
+app.get('/users', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json({ users });
+  } catch (err) {
+    console.error("❌ Error in /users:", err);
+    res.status(500).json({ error: "❌ Failed to fetch users" });
+  }
+});
+
+// ➕ POST /add-user - Add a new user
+app.post('/add-user', async (req, res) => {
+  const { username } = req.body;
+
+  if (!username || typeof username !== 'string') {
+    return res.status(400).json({ error: "Username is required and must be a string" });
+  }
+
+  try {
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({ error: "Username already exists" });
+    }
+
+    const newUser = new User({ username });
+    await newUser.save();
+
+    console.log("✅ User added:", newUser.username);
+    res.status(201).json({ message: "✅ User added", user: newUser });
+  } catch (err) {
+    console.error("❌ Error in /add-user:", err);
+    res.status(500).json({ error: "❌ Failed to add user" });
   }
 });
 
