@@ -1,5 +1,3 @@
-// client/src/components/ClaimPointsForm.js
-
 import React, { useState } from 'react';
 import {
   Box, Typography, Alert, Button, MenuItem, Select, InputLabel,
@@ -28,8 +26,7 @@ function ClaimPointsForm({ users, onClaimSuccess, selectedUserId, setSelectedUse
         points: randomPoints
       });
       setMessage(`✅ ${res.data.message} (${randomPoints} pts)`);
-
-      await onClaimSuccess(); // 🔁 Refresh leaderboard
+      await onClaimSuccess();
     } catch (err) {
       setError(err.response?.data?.error || "❌ Claim failed");
     } finally {
@@ -42,11 +39,16 @@ function ClaimPointsForm({ users, onClaimSuccess, selectedUserId, setSelectedUse
       <Typography variant="h6" gutterBottom>🎯 Claim Random Points</Typography>
 
       <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>Select User</InputLabel>
+        <InputLabel sx={{ color: '#fff' }}>Select User</InputLabel>
         <Select
           value={selectedUserId}
-          label="Select User"
           onChange={(e) => setSelectedUserId(e.target.value)}
+          label="Select User"
+          sx={{
+            color: '#fff',
+            backgroundColor: 'rgba(255,255,255,0.1)',
+            '& .MuiSelect-icon': { color: '#fff' }
+          }}
         >
           {users.map((user) => (
             <MenuItem key={user._id} value={user._id}>

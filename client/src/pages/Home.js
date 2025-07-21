@@ -64,47 +64,76 @@ function Home() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom align="center">
-        🎮 Sky Leaderboard
-      </Typography>
+    // 🌌 Full-screen background with overlay
+    <Box
+      sx={{
+        backgroundImage: 'url("/bg.png")', // 
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
+        pt: 4
+      }}
+    >
+      {/* 🌫️ Blur and dim overlay */}
+      <Box
+        sx={{
+          backdropFilter: 'blur(8px)',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          borderRadius: 4,
+          p: { xs: 2, sm: 4 },
+          width: { xs: '95%', sm: '90%', md: '75%' },
+          color: '#fff'
+        }}
+      >
+        <Container maxWidth="md">
+          <Typography variant="h4" gutterBottom align="center">
+            🎮 Sky Leaderboard
+          </Typography>
 
-      <Divider sx={{ my: 3 }} />
+          <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.3)' }} />
 
-      <Leaderboard leaderboard={leaderboard} />
+          <Leaderboard leaderboard={leaderboard} />
 
-      {/* ⬇️ Moved Add User BELOW Leaderboard */}
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h6" gutterBottom>➕ Add New User</Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <TextField
-            label="Enter username"
-            variant="outlined"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-            fullWidth
+          {/* ➕ Add User */}
+          <Box sx={{ my: 4 }}>
+            <Typography variant="h6" gutterBottom>➕ Add New User</Typography>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+              <TextField
+                label="Enter username"
+                variant="outlined"
+                value={newUsername}
+                onChange={(e) => setNewUsername(e.target.value)}
+                fullWidth
+                InputProps={{
+                  sx: { backgroundColor: '#fff' }
+                }}
+              />
+              <Button variant="contained" onClick={handleAddUser}>
+                Add
+              </Button>
+            </Box>
+            {message && <Alert severity="success" sx={{ mt: 2 }}>{message}</Alert>}
+            {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          </Box>
+
+          <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.3)' }} />
+
+          <ClaimPointsForm
+            users={leaderboard}
+            onClaimSuccess={refreshLeaderboard}
+            selectedUserId={selectedUserId}
+            setSelectedUserId={setSelectedUserId}
           />
-          <Button variant="contained" onClick={handleAddUser}>
-            Add
-          </Button>
-        </Box>
-        {message && <Alert severity="success" sx={{ mt: 2 }}>{message}</Alert>}
-        {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+
+          <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.3)' }} />
+
+          <ClaimHistory selectedUserId={selectedUserId} />
+        </Container>
       </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      <ClaimPointsForm
-        users={leaderboard}
-        onClaimSuccess={refreshLeaderboard}
-        selectedUserId={selectedUserId}
-        setSelectedUserId={setSelectedUserId}
-      />
-
-      <Divider sx={{ my: 3 }} />
-
-      <ClaimHistory selectedUserId={selectedUserId} />
-    </Container>
+    </Box>
   );
 }
 

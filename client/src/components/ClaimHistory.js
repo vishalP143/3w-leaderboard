@@ -21,39 +21,44 @@ function ClaimHistory({ selectedUserId, claimTrigger }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch all users once
   useEffect(() => {
     getAllUsers()
       .then(setUsers)
       .catch(() => setError('❌ Failed to load users'));
   }, []);
 
-  // Sync dropdown userId with parent selection
   useEffect(() => {
     if (selectedUserId) {
       setUserId(selectedUserId);
     }
   }, [selectedUserId]);
 
-  // Fetch claim history on user change or claim trigger
   useEffect(() => {
     if (!userId) return;
-
     setLoading(true);
     setError('');
     getClaimHistory(userId)
       .then(setHistory)
       .catch(() => setError('❌ Failed to fetch claim history'))
       .finally(() => setLoading(false));
-  }, [userId, claimTrigger]); // 🔁 Add claimTrigger here for auto-refresh
+  }, [userId, claimTrigger]);
 
   return (
     <Box mt={4}>
       <Typography variant="h6" gutterBottom>📜 Claim History</Typography>
 
       <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>Select User</InputLabel>
-        <Select value={userId} label="Select User" onChange={(e) => setUserId(e.target.value)}>
+        <InputLabel sx={{ color: '#fff' }}>Select User</InputLabel>
+        <Select
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
+          label="Select User"
+          sx={{
+            color: '#fff',
+            backgroundColor: 'rgba(255,255,255,0.1)',
+            '& .MuiSelect-icon': { color: '#fff' }
+          }}
+        >
           {users.map((u) => (
             <MenuItem key={u._id} value={u._id}>
               {u.username}
@@ -66,9 +71,9 @@ function ClaimHistory({ selectedUserId, claimTrigger }) {
       {error && <Alert severity="error">{error}</Alert>}
 
       {!loading && !error && history.length > 0 && (
-        <List>
+        <List sx={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 2, px: 2 }}>
           {history.map((item) => (
-            <ListItem key={item._id} divider>
+            <ListItem key={item._id} divider sx={{ color: '#fff' }}>
               <ListItemText
                 primary={`User: ${item.userId.username}`}
                 secondary={`Points: ${item.points} | Date: ${new Date(item.claimedAt).toLocaleString()}`}

@@ -1,5 +1,3 @@
-// client/src/components/Leaderboard.js
-
 import React from 'react';
 import {
   Box,
@@ -11,9 +9,9 @@ import {
 import { motion } from 'framer-motion';
 
 const podiumLayout = [
-  { rank: 1, bg: '#FFD700', emoji: '👑', height: 130, order: 2 }, // Center
-  { rank: 2, bg: '#C0C0C0', emoji: '🥈', height: 110, order: 1 }, // Left
-  { rank: 3, bg: '#CD7F32', emoji: '🥉', height: 100, order: 3 }  // Right
+  { rank: 1, bg: 'rgba(255, 215, 0, 0.85)', emoji: '👑', height: 130, order: 2 },
+  { rank: 2, bg: 'rgba(192, 192, 192, 0.85)', emoji: '🥈', height: 110, order: 1 },
+  { rank: 3, bg: 'rgba(205, 127, 50, 0.85)', emoji: '🥉', height: 100, order: 3 }
 ];
 
 function Leaderboard({ leaderboard }) {
@@ -25,7 +23,7 @@ function Leaderboard({ leaderboard }) {
   return (
     <Box mt={4}>
       <Typography variant="h5" align="center" gutterBottom>
-        🏆 Podium Champions
+        🏆 Champions
       </Typography>
 
       {/* 🥇 Podium View */}
@@ -51,7 +49,8 @@ function Leaderboard({ leaderboard }) {
                     alignItems: 'center',
                     borderRadius: 2,
                     padding: 1,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    color: '#000'
                   }}
                 >
                   <Avatar sx={{ bgcolor: '#fff', color: '#000', mb: 1 }}>
@@ -80,7 +79,15 @@ function Leaderboard({ leaderboard }) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
               >
-                <Paper elevation={2} sx={{ p: 2, mb: 1 }}>
+                <Paper
+                  elevation={2}
+                  sx={{
+                    p: 2,
+                    mb: 1,
+                    backgroundColor: 'rgba(255,255,255,0.8)',
+                    color: '#000'
+                  }}
+                >
                   <Typography>
                     <strong>#{index + 4}</strong> {user.username} - {user.score} pts
                   </Typography>
