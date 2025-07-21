@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
 import {
-  Box, Typography, Alert, Button, MenuItem, Select, InputLabel,
-  FormControl, CircularProgress
+  Box,
+  Typography,
+  Alert,
+  Button,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  CircularProgress,
+  useMediaQuery
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
 
@@ -10,6 +19,9 @@ function ClaimPointsForm({ users, onClaimSuccess, selectedUserId, setSelectedUse
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleClaim = async () => {
     if (!selectedUserId) return setError("Please select a user");
@@ -36,7 +48,9 @@ function ClaimPointsForm({ users, onClaimSuccess, selectedUserId, setSelectedUse
 
   return (
     <Box mt={4}>
-      <Typography variant="h6" gutterBottom>🎯 Claim Random Points</Typography>
+      <Typography variant="h6" gutterBottom align={isMobile ? 'center' : 'left'}>
+        🎯 Claim Random Points
+      </Typography>
 
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel sx={{ color: '#fff' }}>Select User</InputLabel>
@@ -58,9 +72,22 @@ function ClaimPointsForm({ users, onClaimSuccess, selectedUserId, setSelectedUse
         </Select>
       </FormControl>
 
-      <Button variant="contained" onClick={handleClaim} disabled={!selectedUserId || loading}>
-        {loading ? <CircularProgress size={24} /> : 'Claim'}
-      </Button>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: isMobile ? 'center' : 'flex-start',
+          alignItems: 'center',
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={handleClaim}
+          disabled={!selectedUserId || loading}
+          sx={{ minWidth: 120 }}
+        >
+          {loading ? <CircularProgress size={24} color="inherit" /> : 'Claim'}
+        </Button>
+      </Box>
 
       {message && <Alert severity="success" sx={{ mt: 2 }}>{message}</Alert>}
       {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}

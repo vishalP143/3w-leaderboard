@@ -10,8 +10,10 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  useMediaQuery
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { getAllUsers, getClaimHistory } from '../api/leaderboardAPI';
 
 function ClaimHistory({ selectedUserId, claimTrigger }) {
@@ -20,6 +22,9 @@ function ClaimHistory({ selectedUserId, claimTrigger }) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     getAllUsers()
@@ -45,7 +50,13 @@ function ClaimHistory({ selectedUserId, claimTrigger }) {
 
   return (
     <Box mt={4}>
-      <Typography variant="h6" gutterBottom>📜 Claim History</Typography>
+      <Typography
+        variant="h6"
+        gutterBottom
+        align={isMobile ? 'center' : 'left'}
+      >
+        📜 Claim History
+      </Typography>
 
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel sx={{ color: '#fff' }}>Select User</InputLabel>
@@ -67,16 +78,38 @@ function ClaimHistory({ selectedUserId, claimTrigger }) {
         </Select>
       </FormControl>
 
-      {loading && <CircularProgress />}
+      {loading && (
+        <Box display="flex" justifyContent="center" my={2}>
+          <CircularProgress />
+        </Box>
+      )}
+
       {error && <Alert severity="error">{error}</Alert>}
 
       {!loading && !error && history.length > 0 && (
-        <List sx={{ backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 2, px: 2 }}>
+        <List
+          sx={{
+            backgroundColor: 'rgba(255,255,255,0.1)',
+            borderRadius: 2,
+            px: { xs: 1, sm: 2 },
+            py: 1,
+            maxHeight: 300,
+            overflowY: 'auto'
+          }}
+        >
           {history.map((item) => (
-            <ListItem key={item._id} divider sx={{ color: '#fff' }}>
+            <ListItem
+              key={item._id}
+              divider
+              sx={{
+                color: '#fff',
+                flexDirection: 'column',
+                alignItems: 'flex-start'
+              }}
+            >
               <ListItemText
-                primary={`User: ${item.userId.username}`}
-                secondary={`Points: ${item.points} | Date: ${new Date(item.claimedAt).toLocaleString()}`}
+                primary={`👤 ${item.userId.username}`}
+                secondary={`⭐ ${item.points} pts  •  🕒 ${new Date(item.claimedAt).toLocaleString()}`}
               />
             </ListItem>
           ))}
@@ -84,7 +117,9 @@ function ClaimHistory({ selectedUserId, claimTrigger }) {
       )}
 
       {!loading && !error && userId && history.length === 0 && (
-        <Typography>No claim history for this user.</Typography>
+        <Typography align="center" sx={{ mt: 2 }}>
+          No claim history for this user.
+        </Typography>
       )}
     </Box>
   );

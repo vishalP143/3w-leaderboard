@@ -4,7 +4,9 @@ import {
   Typography,
   Paper,
   Avatar,
-  Grid
+  Grid,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import { motion } from 'framer-motion';
 
@@ -15,6 +17,9 @@ const podiumLayout = [
 ];
 
 function Leaderboard({ leaderboard }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   if (!leaderboard || leaderboard.length === 0) return null;
 
   const top3 = leaderboard.slice(0, 3);
@@ -31,7 +36,7 @@ function Leaderboard({ leaderboard }) {
         {top3.map((user, idx) => {
           const { bg, emoji, height, order } = podiumLayout[idx];
           return (
-            <Grid item key={user._id} sx={{ order }}>
+            <Grid item key={user._id} xs={12} sm="auto" sx={{ order }}>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -40,8 +45,8 @@ function Leaderboard({ leaderboard }) {
                 <Paper
                   elevation={6}
                   sx={{
-                    width: 110,
-                    height,
+                    width: isMobile ? '100%' : 110,
+                    height: isMobile ? 'auto' : height,
                     backgroundColor: bg,
                     display: 'flex',
                     flexDirection: 'column',
@@ -56,7 +61,7 @@ function Leaderboard({ leaderboard }) {
                   <Avatar sx={{ bgcolor: '#fff', color: '#000', mb: 1 }}>
                     {emoji}
                   </Avatar>
-                  <Typography fontWeight="bold" variant="subtitle2">
+                  <Typography fontWeight="bold" variant="subtitle2" noWrap>
                     {user.username}
                   </Typography>
                   <Typography variant="caption">{user.score} pts</Typography>
@@ -71,7 +76,7 @@ function Leaderboard({ leaderboard }) {
       {others.length > 0 && (
         <>
           <Typography variant="h6" gutterBottom>🎮 Other Players</Typography>
-          <Box>
+          <Box sx={{ px: { xs: 1, sm: 0 } }}>
             {others.map((user, index) => (
               <motion.div
                 key={user._id}
@@ -84,7 +89,7 @@ function Leaderboard({ leaderboard }) {
                   sx={{
                     p: 2,
                     mb: 1,
-                    backgroundColor: 'rgba(255,255,255,0.8)',
+                    backgroundColor: 'rgba(255,255,255,0.85)',
                     color: '#000'
                   }}
                 >

@@ -64,20 +64,19 @@ function Home() {
   };
 
   return (
-    // 🌌 Full-screen background with overlay
     <Box
       sx={{
-        backgroundImage: 'url("/bg.png")', // 
+        backgroundImage: 'url("/bg.png")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         minHeight: '100vh',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'flex-start',
+        overflowY: 'auto', // 👈 allow scroll
         pt: 4
       }}
     >
-      {/* 🌫️ Blur and dim overlay */}
       <Box
         sx={{
           backdropFilter: 'blur(8px)',
@@ -88,7 +87,7 @@ function Home() {
           color: '#fff'
         }}
       >
-        <Container maxWidth="md">
+        <Container maxWidth="sm" disableGutters sx={{ px: { xs: 1, sm: 3 } }}>
           <Typography variant="h4" gutterBottom align="center">
             🎮 Sky Leaderboard
           </Typography>
@@ -111,7 +110,11 @@ function Home() {
                   sx: { backgroundColor: '#fff' }
                 }}
               />
-              <Button variant="contained" onClick={handleAddUser}>
+              <Button
+                variant="contained"
+                onClick={handleAddUser}
+                sx={{ minWidth: { xs: '100%', sm: 'auto' } }}
+              >
                 Add
               </Button>
             </Box>
