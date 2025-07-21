@@ -1,5 +1,3 @@
-// server/server.js
-
 console.log("🛠️  Starting server.js");
 console.log("🛠️  CWD:", process.cwd());
 console.log("🛠️  __filename:", __filename);
@@ -7,6 +5,7 @@ console.log("🛠️  __filename:", __filename);
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 let User, ClaimHistory;
@@ -163,6 +162,16 @@ app.post('/add-user', async (req, res) => {
     res.status(500).json({ error: "❌ Failed to add user" });
   }
 });
+
+// 🌐 Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  const buildPath = path.join(__dirname, '../client/build');
+  app.use(express.static(buildPath));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server listening on port ${PORT}`));
