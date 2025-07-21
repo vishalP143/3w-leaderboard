@@ -1,3 +1,10 @@
 // client/src/utils/constants.js
 
-export const BASE_URL = 'https://5000-vishalp143-3wleaderboar-3kvvgp1843i.ws-us120.gitpod.io'; // 🌐 Your backend base URL
+const getBaseUrl = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return ''; // 🌐 In production, use relative path
+  }
+  return 'http://localhost:5000'; // 💻 In development (local or Gitpod)
+};
+
+export const BASE_URL = getBaseUrl();
